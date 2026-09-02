@@ -1,5 +1,4 @@
 import streamlit as st
-import streamlit.components.v1 as components
 
 # 페이지 기본 설정
 st.set_page_config(
@@ -8,27 +7,11 @@ st.set_page_config(
     layout="wide"
 )
 
-# -------------------------------------------------------------------
-# 🔊 효과음 재생을 위한 JavaScript 함수 설정
-# -------------------------------------------------------------------
-# 외부 오디오 파일 URL (죠타로의 오라오라 효과음/음성 파일)
-ORA_SOUND_URL = "https://www.myinstants.com/media/sounds/ora-ora-ora.mp3"
-
-def play_ora_sound():
-    """버튼 클릭 시 JavaScript를 이용해 오디오를 재생하는 컴포넌트"""
-    js_code = f"""
-        <script>
-            var audio = new Audio('{ORA_SOUND_URL}');
-            audio.play();
-        </script>
-    """
-    components.html(js_code, height=0, width=0)
-
 # 헤더 타이틀 및 설명
 st.title("⭐ 죠죠의 기묘한 모험 3부: 스탠드 도감 ⭐")
-st.markdown("주인공 일러스트(버튼)를 클릭하면 **오라!** 소리와 함께 해당 캐릭터의 스탠드 정보가 출력됩니다!")
+st.markdown("주인공 일러스트(버튼)를 클릭하면 해당 캐릭터의 스탠드와 기술 정보가 출력됩니다!")
 
-# 캐릭터 데이터베이스
+# 캐릭터 데이터베이스 (실제 일러스트 URL 적용 완료)
 characters = {
     "쿠죠 죠타로": {
         "stand": "스타 플래티나 (Star Platinum)",
@@ -96,27 +79,18 @@ characters = {
 # 세션 상태(Session State) 초기화
 if "selected_char" not in st.session_state:
     st.session_state.selected_char = "쿠죠 죠타로"
-if "play_sound" not in st.session_state:
-    st.session_state.play_sound = False
 
 st.write("---")
 st.subheader("👥 캐릭터를 선택하세요")
 
-# 캐릭터 일러스트 버튼 배치
+# 캐릭터 일러스트 버튼 배치 (6열 레이아웃)
 cols = st.columns(len(characters))
 
 for idx, (name, info) in enumerate(characters.items()):
     with cols[idx]:
         st.image(info["image"], use_container_width=True)
-        # 버튼을 누르면 캐릭터 변경 및 음성 재생 플래그 설정
         if st.button(name, key=f"btn_{name}", use_container_width=True):
             st.session_state.selected_char = name
-            st.session_state.play_sound = True
-
-# 소리 재생 플래그가 True이면 소리를 내고 초기화
-if st.session_state.play_sound:
-    play_ora_sound()
-    st.session_state.play_sound = False
 
 st.write("---")
 
@@ -127,4 +101,17 @@ char_data = characters[selected_name]
 col_img, col_info = st.columns([1, 2])
 
 with col_img:
-    st.image(char_data["image"], caption=f"{
+    st.image(char_data["image"], caption=f"{selected_name}", use_container_width=True)
+
+with col_info:
+    st.title(selected_name)
+    st.subheader(f"✨ 스탠드: {char_data['stand']}")
+    st.write(char_data["description"])
+    
+    st.markdown("### ⚔️ 주요 기술 및 능력")
+    for skill in char_data["skills"]:
+        parts = skill.split(":", 1)
+        if len(parts) == 2:
+            st.markdown(f"- **{parts[0].strip()}**: {parts[1].strip()}")
+        else:
+            st.markdown(f"- **{skill}**")
