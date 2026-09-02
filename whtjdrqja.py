@@ -91,26 +91,4 @@ for idx, (name, info) in enumerate(characters.items()):
         # 캐릭터 이미지 표시
         st.image(info["image"], use_container_width=True)
         # 선택 버튼
-        if st.button(name, key=f"btn_{name}", use_container_width=True):
-            st.session_state.selected_char = name
-
-st.write("---")
-
-# 선택된 캐릭터 상세 정보 출력
-selected_name = st.session_state.selected_char
-char_data = characters[selected_name]
-
-# 상세 정보 화면 구성
-col_img, col_info = st.columns([1, 2])
-
-with col_img:
-    st.image(char_data["image"], caption=f"{selected_name}", use_container_width=True)
-
-with col_info:
-    st.title(selected_name)
-    st.subheader(f"✨ 스탠드: {char_data['stand']}")
-    st.write(char_data["description"])
-    
-    st.markdown("### ⚔️ 주요 기술 및 능력")
-    for skill in char_data["skills"]:
-        st.markdown(f"- **{skill.split(':')[0]}**: {skill.split(':')[1] if ':' in skill else ''}")
+        if
