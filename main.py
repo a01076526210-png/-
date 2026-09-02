@@ -1,113 +1,130 @@
 import streamlit as st
+import streamlit.components.v1 as components
 
-# 1. 페이지 설정 (아이콘, 타이틀, 레이아웃)
+# 페이지 기본 설정
 st.set_page_config(
-    page_title="✨MBTI 진로 탐색 파라다이스 🌈",
-    page_icon="🦄",
+    page_title="죠죠 3부 스탠드 도감",
+    page_icon="⭐",
     layout="wide"
 )
 
-# 커스텀 CSS (화려한 배경 그라데이션 및 카드 스타일링)
-st.markdown("""
-    <style>
-    .main {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-    .mbti-card {
-        background: white;
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border: 2px solid #ff9a9e;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .job-badge {
-        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-        color: #2c3e50;
-        padding: 12px;
-        border-radius: 15px;
-        font-weight: bold;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        font-size: 1.1rem;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# -------------------------------------------------------------------
+# 🔊 효과음 재생을 위한 JavaScript 함수 설정
+# -------------------------------------------------------------------
+# 외부 오디오 파일 URL (죠타로의 오라오라 효과음/음성 파일)
+ORA_SOUND_URL = "https://www.myinstants.com/media/sounds/ora-ora-ora.mp3"
 
-# 2. MBTI 데이터 베이스 (이모지 및 풍부한 정보 추가)
-mbti_db = {
-    "ISTJ": {"title": "📐 꼼꼼한 원칙주의자", "color": "🔵", "jobs": ["📊 회계사", "💻 데이터 분석가", "⚖️ 사법관", "🏗️ 시스템 엔지니어"], "trait": "체계적이고 신중하며 책임감이 매우 강합니다! 데이터와 명확한 규칙이 있는 직무에서 최고의 능력을 발휘해요! 🔍"},
-    "ISFJ": {"title": "🛡️ 따뜻한 수호자", "color": "💗", "jobs": ["🩺 간호사", "🏫 초등교사", "🤝 사회복지사", "📋 HR 담당자"], "trait": "이타적이고 세심하여 타인을 돕는 일에서 큰 보람을 느낍니다! 안정적이고 조화로운 환경이 딱이에요! 🌸"},
-    "INFJ": {"title": "🔮 통찰력 있는 예언자", "color": "🟣", "jobs": ["💬 심리상담사", "✍️ 작가", "🧭 진로 컨설턴트", "🎨 UX 디자이너"], "trait": "깊은 통찰력과 이상을 가지고 사람들의 성장을 돕습니다! 가치 있는 일에 열정을 다하는 스타일이에요! 🌟"},
-    "INTJ": {"title": "용의주도한 전략가", "color": "🖤", "jobs": ["💼 경영 컨설턴트", "🔬 AI 연구원", "📈 투자 분석가", "🧠 뇌과학자"], "trait": "독립적이고 분석적이며 장기적 전략을 잘 세웁니다! 복잡한 문제를 해결하는 지적인 도전이 최고죠! ♟️"},
-    "ISTP": {"title": "🛠️ 만능 만능 재주꾼", "color": "🟢", "jobs": ["⚙️ 기계 엔지니어", "✈️ 파일럿", "🗄️ DB 관리자", "🚑 응급구조사"], "trait": "객관적이고 적응력이 뛰어나며 도구와 시스템을 손쉽게 다룹니다! 위기 관리 능력이 완벽해요! ⚡"},
-    "ISFP": {"title": "🎨 자유로운 예술가", "color": "🎨", "jobs": ["🖼️ 그래픽 디자이너", "📸 사진작가", "🐾 수의사", "👗 패션 디자이너"], "trait": "온화하고 감각적이며 자신만의 독창적인 예술성을 추구합니다! 자율성이 보장될 때 빛을 발해요! 🌈"},
-    "INFP": {"title": "🦄 꿈꾸는 중재자", "color": "🌸", "jobs": ["🎬 콘텐츠 크리에이터", "📖 소설가", "🌐 번역가", "🌿 환경 운동가"], "trait": "낭만적이고 이상주의적입니다! 자신의 가치관과 일치하는 정서 깊은 분야에서 능력을 펼쳐요! 💫"},
-    "INTP": {"title": "💡 호기심 천재 사색가", "color": "🧪", "jobs": ["💻 소프트웨어 아키텍트", "🔭 물리학자", "📐 금융 공학자", "🧠 철학 연구원"], "trait": "지적 호기심이 폭발하는 비판적 사고의 소유자! 새로운 이론과 원리를 탐구할 때 가장 행복해요! 🌌"},
-    "ESTP": {"title": "🔥 모험을 즐기는 활동가", "color": "🟠", "jobs": ["💰 자산관리사", "🚀 스타트업 창업가", "⚽ 스포츠 감독", "📢 마케터"], "trait": "모험과 위험을 두려워하지 않는 대담함! 스릴 넘치고 빠른 판단이 필요한 현장에서 맹활약해요! 🏎️"},
-    "ESFP": {"title": "🎉 흥 넘치는 연예인", "color": "🟡", "jobs": ["🎪 이벤트 기획자", "🎭 연기자/뮤지컬 배우", "✈️ 여행 가이드", "📢 PR 전문가"], "trait": "에너지 방출! 타인에게 즐거움을 주는 사교왕입니다! 늘 활기차고 밝은 현장이 어울려요! 🎤"},
-    "ENFP": {"title": "🎈 비타민 활동가", "color": "💛", "jobs": ["✍️ 카피라이터", "💡 광고 기획자", "🎙️ 행사 MC", "🚀 캠페인 리더"], "trait": "상상력이 무궁무진하며 에너지가 넘칩니다! 사람들에게 긍정적 영감을 주는 프로젝트에 딱이에요! 💥"},
-    "ENTP": {"title": "⚡ 아이디어 폭발 변론가", "color": "🔴", "jobs": ["🦄 벤처 투자자", "⚖️ 변호사", "📱 프로덕트 매니저", "🎯 정치 전략가"], "trait": "독창적이고 도전 정신이 넘칩니다! 기발한 아이디어로 기존 틀을 깨부수는 혁신가예요! 💥"},
-    "ESTJ": {"title": "👑 카리스마 관리자", "color": "🟦", "jobs": ["🏛️ 프로젝트 매니저", "📊 운영 이사", "🏫 학교 행정가", "👮 경찰 간부"], "trait": "체계적이고 리더십이 뛰어난 실용주의자! 조직을 결단력 있게 이끌고 목표를 달성해냅니다! 🎖️"},
-    "ESFJ": {"title": "🎁 친절한 핵인싸", "color": "🧡", "jobs": ["🤝 인사 관리자(HR)", "✈️ 승무원", "🎧 CSM 전문가", "🏫 초등 교사"], "trait": "친절하고 조화로운 관계를 만들어가는 분위기 메이커! 타인을 챙기고 돕는 직무에 특화되어 있어요! 💌"},
-    "ENFJ": {"title": "🌟 빛나는 사회운동가", "color": "✨", "jobs": ["🧭 진로진학 교사", "🌱 NGO 대표", "🎯 HRD 교육 전문가", "🎤 아나운서"], "trait": "카리스마와 따뜻함을 겸비한 타고난 지도자! 타인의 잠재력을 끌어올려 성장시키는 스페셜리스트! 🏆"},
-    "ENTJ": {"title": "🔥 대담한 야망가 통솔자", "color": "👑", "jobs": ["🏢 CEO / 대표", "📈 경영 전략가", "🏦 Investment Banker", "🏛️ 정치인"], "trait": "철저한 계획 수립과 리더십을 갖춘 대담한 지도자! 명확한 비전으로 성공을 향해 나아갑니다! 🚀"}
+def play_ora_sound():
+    """버튼 클릭 시 JavaScript를 이용해 오디오를 재생하는 컴포넌트"""
+    js_code = f"""
+        <script>
+            var audio = new Audio('{ORA_SOUND_URL}');
+            audio.play();
+        </script>
+    """
+    components.html(js_code, height=0, width=0)
+
+# 헤더 타이틀 및 설명
+st.title("⭐ 죠죠의 기묘한 모험 3부: 스탠드 도감 ⭐")
+st.markdown("주인공 일러스트(버튼)를 클릭하면 **오라!** 소리와 함께 해당 캐릭터의 스탠드 정보가 출력됩니다!")
+
+# 캐릭터 데이터베이스
+characters = {
+    "쿠죠 죠타로": {
+        "stand": "스타 플래티나 (Star Platinum)",
+        "image": "https://i.namu.wiki/i/0kggSR3vldNGwx71zBWkQnuiSNn_kdI0HsvAEZA4T5HsNHRC6PJT49aZYQF_hUXs-KJ-PQIm3xKFEX4sUWUGUA.webp",
+        "description": "압도적인 파괴력과 정밀성, 그리고 눈으로 쫓을 수 없는 스피드를 자랑하는 근거리 파워형 스탠드.",
+        "skills": [
+            "오라오라 러시: 초고속 연속 펀치 공격",
+            "스타 핑거: 손가락을 순간적으로 늘려 적을 찌르는 공격",
+            "정밀한 시각 & 정밀 동작: 미세한 움직임과 대상을 정확히 관찰 및 포착",
+            "시간 정지 (시간을 멈춰라): 시간의 흐름을 몇 초간 멈춤"
+        ]
+    },
+    "조셉 죠스타": {
+        "stand": "허밋 퍼플 (Hermit Purple)",
+        "image": "https://i.namu.wiki/i/zrS1cSjogLQLAOJS231-AlUAOIG3709TFniGG2Fd44ykDoHDuMBL3XAFRF3VXNMIXGypvs8OtW3Lfsr-Wb7eiQ.webp",
+        "description": "가시가 돋친 덩굴 형태의 스탠드로, 염사 및 비전(미래/위치 추적) 능력에 특화되어 있음.",
+        "skills": [
+            "염사 (기계/사진 염사): 카메라나 TV 등을 부수거나 작동시켜 원하는 정보를 영상화",
+            "파문 전도: 덩굴을 통해 파문 에너지를 전달하여 공격 및 방어",
+            "지도/지형 탐색: 모래나 지도 위에 스탠드를 펼쳐 목적지의 위치 추적"
+        ]
+    },
+    "무하마드 압둘": {
+        "stand": "매지션즈 레드 (Magician's Red)",
+        "image": "https://i.namu.wiki/i/dI_bJ1KpZELcZWA8o3ZlDFnK4jXgZW4NekfzY8wntuE6ifGRlvocAkLa6-CDvS-BJEiqSiS_A3y0kePGASVo8w.webp",
+        "description": "조류 머리를 한 도인 형태의 스탠드로, 고열의 화염을 자유자재로 조종함.",
+        "skills": [
+            "크로스 파이어 허리케인: 앙크(Ankh) 모양의 고열 화염 탄환을 연사",
+            "생체 탐지 (파이어 디텍터): 생명체의 생체 열을 감지하여 적의 위치 추적",
+            "레드 바인드: 화염으로 만든 밧줄로 적을 묶어 구속 및 구움"
+        ]
+    },
+    "카쿄인 노리아키": {
+        "stand": "하이에로판트 그린 (Hierophant Green)",
+        "image": "https://i.namu.wiki/i/RxGjfESvafY_E-RtoRe2VoYZyeUdrmbu-csFlT_kREWhp9j_RGRXTS-DG3byCusAWQhJWaMPpmGfemQOyRZpfQ.webp",
+        "description": "줄기 형태로 몸을 해체할 수 있는 원거리 조종형 스탠드.",
+        "skills": [
+            "에메랄드 스플래시: 에메랄드 모양의 결정체 체액을 고속으로 분사하는 중거리 격파 기술",
+            "스탠드 침투 및 세뇌: 타인의 몸속으로 침투하여 상대를 조종",
+            "반경 20미터 에메랄드 스플래시: 스탠드 줄기를 20m 결계로 펼쳐 촉발 시 전방위 사격"
+        ]
+    },
+    "장 피에르 폴나레프": {
+        "stand": "실버 채리엇 (Silver Chariot)",
+        "image": "https://i.namu.wiki/i/ICgsObo8cD7C2wOp2Rt0NP7j7Jxd3DhTZyVbFDgVKXODZyd3EBDglk93uIOoSHf0nWvOYmqPHgsZOqX7H5ey1w.webp",
+        "description": "갑옷을 입은 기사 형태의 스탠드로, 레이피어를 사용한 초고속 검술에 특화됨.",
+        "skills": [
+            "고속 검술 및 찌르기: 눈에 보이지 않을 정도의 정밀하고 빠른 검술",
+            "갑옷 탈복 (갑옷 벗기): 갑옷을 벗어 던져 방어력을 낮추는 대신 잔상이 생길 정도의 초고속 이동 가능",
+            "검신 분사 (레이피어 검신 날리기): 레이피어 칼날을 강하게 튕겨내어 예상치 못한 각도에서 적을 공격"
+        ]
+    },
+    "이기": {
+        "stand": "더 풀 (The Fool)",
+        "image": "https://i.namu.wiki/i/b6ftOlSoLGIRAZLySHzZ8lmCAEne6zY0bBU9CXcH0tOY3vih2s6DkXwa_7Z2J0Yg3PGnxLqBzxH7qgkM9OyeZQ.webp",
+        "description": "모래로 구성된 스탠드로, 형태 변형이 자유롭고 물질 형태이기에 물리 공격에 파괴되지 않음.",
+        "skills": [
+            "모래 변형 및 글라이더: 모래를 입혀 날개를 만들어 공중을 비행",
+            "의태/환영 생성: 모래를 이용해 타인(예: DIO 등)의 모습으로 완벽하게 변장",
+            "물리 공격 무효화: 모래 덩어리이므로 베거나 찔려도 본체에 직접적인 데미지가 없음"
+        ]
+    }
 }
 
-# 3. 메인 헤더 레이아웃
-st.markdown("<h1 style='text-align: center;'>🌈 ✨ MBTI 맞춤형 진로 탐색 드림랜드 ✨ 🌈</h1>", unsafe_allow_html=True)
-st.markdown("<h4 style='text-align: center; color: #555;'>나의 성격에 딱 맞는 인생 직업을 찾아보세요! 🎉 🚀</h4>", unsafe_allow_html=True)
+# 세션 상태(Session State) 초기화
+if "selected_char" not in st.session_state:
+    st.session_state.selected_char = "쿠죠 죠타로"
+if "play_sound" not in st.session_state:
+    st.session_state.play_sound = False
 
-st.write("")
-st.write("")
+st.write("---")
+st.subheader("👥 캐릭터를 선택하세요")
 
-# 4. 사이드바 / 메인 선택창
-col1, col2, col3 = st.columns([1, 2, 1])
+# 캐릭터 일러스트 버튼 배치
+cols = st.columns(len(characters))
 
-with col2:
-    selected_mbti = st.selectbox(
-        "🔮 **당신의 MBTI를 선택해 보세요!** 🔮",
-        options=list(mbti_db.keys()),
-        index=0
-    )
+for idx, (name, info) in enumerate(characters.items()):
+    with cols[idx]:
+        st.image(info["image"], use_container_width=True)
+        # 버튼을 누르면 캐릭터 변경 및 음성 재생 플래그 설정
+        if st.button(name, key=f"btn_{name}", use_container_width=True):
+            st.session_state.selected_char = name
+            st.session_state.play_sound = True
 
-st.divider()
+# 소리 재생 플래그가 True이면 소리를 내고 초기화
+if st.session_state.play_sound:
+    play_ora_sound()
+    st.session_state.play_sound = False
 
-# 5. 선택된 MBTI 정보 카드 화려하게 출력
-if selected_mbti:
-    info = mbti_db[selected_mbti]
-    
-    # 축하 효과 팡파르! 🎉
-    st.balloons()
-    
-    # 대표 헤더 박스
-    st.markdown(f"""
-        <div class="mbti-card">
-            <h1 style="color: #ff4b4b; margin-bottom: 0px;">{info['color']} {selected_mbti} {info['color']}</h1>
-            <h2 style="color: #333; margin-top: 10px;">{info['title']}</h2>
-            <hr style="border: 1px solid #eee;">
-            <p style="font-size: 1.2rem; line-height: 1.8; color: #555;">{info['trait']}</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.write("")
-    st.markdown("<h2 style='text-align: center;'>🎯 🔥 추천하는 베스트 직업 TOP 4 🔥 🎯</h2>", unsafe_allow_html=True)
-    st.write("")
-    
-    # 4개의 컬럼으로 카드 배치
-    j_cols = st.columns(4)
-    for idx, job in enumerate(info["jobs"]):
-        with j_cols[idx]:
-            st.markdown(f"""
-                <div class="job-badge">
-                    {job}
-                </div>
-            """, unsafe_allow_html=True)
+st.write("---")
 
-st.write("")
-st.write("")
-st.divider()
+# 선택된 캐릭터 상세 정보 출력
+selected_name = st.session_state.selected_char
+char_data = characters[selected_name]
 
-# 6. 하단 푸터 및 팁
-st.info("💡 **진로 교육 Tip:** MBTI는 나를 이해하는 흥미로운 가이드일 뿐! 여러분의 가능성은 무한하답니다 ⭐ 🌈")
+col_img, col_info = st.columns([1, 2])
+
+with col_img:
+    st.image(char_data["image"], caption=f"{
