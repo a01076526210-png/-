@@ -1,114 +1,102 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 페이지 기본 설정
-st.set_page_config(
-    page_title="죠죠 3부 스탠드 도감",
-    page_icon="⭐",
-    layout="wide"
+st.set_page_config(page_title="JoJo 3-6 DB", page_icon="⭐", layout="wide")
 
+def play_ora_sound():
+    components.html("""
+        <script>
+        function playOra() {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = ctx.currentTime;
+            
+            [0, 0.11, 0.22, 0.33, 0.44].forEach((delay) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(130, now + delay);
+                osc.frequency.exponentialRampToValueAtTime(30, now + delay + 0.09);
+                
+                gain.gain.setValueAtTime(0.4, now + delay);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.09);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start(now + delay);
+                osc.stop(now + delay + 0.09);
+            });
+        }
+        playOra();
+        </script>
+    """, height=0)
 
-# 헤더 타이틀 및 설명
-st.title("⭐ 죠죠의 기묘한 모험 3부: 스탠드 도감 ⭐")
-st.markdown("주인공 일러스트(버튼)를 클릭하면 **오라!** 소리와 함께 해당 캐릭터의 스탠드 정보가 출력됩니다!")
+st.title("🔥 죠죠의 기묘한 모험 (3부 ~ 6부) 등장인물 도감")
 
-# 캐릭터 데이터베이스
-characters = {
-    "쿠죠 죠타로": {
-        "stand": "스타 플래티나 (Star Platinum)",
-        "image": "https://i.namu.wiki/i/0kggSR3vldNGwx71zBWkQnuiSNn_kdI0HsvAEZA4T5HsNHRC6PJT49aZYQF_hUXs-KJ-PQIm3xKFEX4sUWUGUA.webp",
-        "description": "압도적인 파괴력과 정밀성, 그리고 눈으로 쫓을 수 없는 스피드를 자랑하는 근거리 파워형 스탠드.",
-        "skills": [
-            "오라오라 러시: 초고속 연속 펀치 공격",
-            "스타 핑거: 손가락을 순간적으로 늘려 적을 찌르는 공격",
-            "정밀한 시각 & 정밀 동작: 미세한 움직임과 대상을 정확히 관찰 및 포착",
-            "시간 정지 (시간을 멈춰라): 시간의 흐름을 몇 초간 멈춤"
-        ]
-    },
-    "조셉 죠스타": {
-        "stand": "허밋 퍼플 (Hermit Purple)",
-        "image": "https://i.namu.wiki/i/zrS1cSjogLQLAOJS231-AlUAOIG3709TFniGG2Fd44ykDoHDuMBL3XAFRF3VXNMIXGypvs8OtW3Lfsr-Wb7eiQ.webp",
-        "description": "가시가 돋친 덩굴 형태의 스탠드로, 염사 및 비전(미래/위치 추적) 능력에 특화되어 있음.",
-        "skills": [
-            "염사 (기계/사진 염사): 카메라나 TV 등을 부수거나 작동시켜 원하는 정보를 영상화",
-            "파문 전도: 덩굴을 통해 파문 에너지를 전달하여 공격 및 방어",
-            "지도/지형 탐색: 모래나 지도 위에 스탠드를 펼쳐 목적지의 위치 추적"
-        ]
-    },
-    "무하마드 압둘": {
-        "stand": "매지션즈 레드 (Magician's Red)",
-        "image": "https://i.namu.wiki/i/dI_bJ1KpZELcZWA8o3ZlDFnK4jXgZW4NekfzY8wntuE6ifGRlvocAkLa6-CDvS-BJEiqSiS_A3y0kePGASVo8w.webp",
-        "description": "조류 머리를 한 도인 형태의 스탠드로, 고열의 화염을 자유자재로 조종함.",
-        "skills": [
-            "크로스 파이어 허리케인: 앙크(Ankh) 모양의 고열 화염 탄환을 연사",
-            "생체 탐지 (파이어 디텍터): 생명체의 생체 열을 감지하여 적의 위치 추적",
-            "레드 바인드: 화염으로 만든 밧줄로 적을 묶어 구속 및 구움"
-        ]
-    },
-    "카쿄인 노리아키": {
-        "stand": "하이에로판트 그린 (Hierophant Green)",
-        "image": "https://i.namu.wiki/i/RxGjfESvafY_E-RtoRe2VoYZyeUdrmbu-csFlT_kREWhp9j_RGRXTS-DG3byCusAWQhJWaMPpmGfemQOyRZpfQ.webp",
-        "description": "줄기 형태로 몸을 해체할 수 있는 원거리 조종형 스탠드.",
-        "skills": [
-            "에메랄드 스플래시: 에메랄드 모양의 결정체 체액을 고속으로 분사하는 중거리 격파 기술",
-            "스탠드 침투 및 세뇌: 타인의 몸속으로 침투하여 상대를 조종",
-            "반경 20미터 에메랄드 스플래시: 스탠드 줄기를 20m 결계로 펼쳐 촉발 시 전방위 사격"
-        ]
-    },
-    "장 피에르 폴나레프": {
-        "stand": "실버 채리엇 (Silver Chariot)",
-        "image": "https://i.namu.wiki/i/ICgsObo8cD7C2wOp2Rt0NP7j7Jxd3DhTZyVbFDgVKXODZyd3EBDglk93uIOoSHf0nWvOYmqPHgsZOqX7H5ey1w.webp",
-        "description": "갑옷을 입은 기사 형태의 스탠드로, 레이피어를 사용한 초고속 검술에 특화됨.",
-        "skills": [
-            "고속 검술 및 찌르기: 눈에 보이지 않을 정도의 정밀하고 빠른 검술",
-            "갑옷 탈복 (갑옷 벗기): 갑옷을 벗어 던져 방어력을 낮추는 대신 잔상이 생길 정도의 초고속 이동 가능",
-            "검신 분사 (레이피어 검신 날리기): 레이피어 칼날을 강하게 튕겨내어 예상치 못한 각도에서 적을 공격"
-        ]
-    },
-    "이기": {
-        "stand": "더 풀 (The Fool)",
-        "image": "https://i.namu.wiki/i/b6ftOlSoLGIRAZLySHzZ8lmCAEne6zY0bBU9CXcH0tOY3vih2s6DkXwa_7Z2J0Yg3PGnxLqBzxH7qgkM9OyeZQ.webp",
-        "description": "모래로 구성된 스탠드로, 형태 변형이 자유롭고 물질 형태이기에 물리 공격에 파괴되지 않음.",
-        "skills": [
-            "모래 변형 및 글라이더: 모래를 입혀 날개를 만들어 공중을 비행",
-            "의태/환영 생성: 모래를 이용해 타인(예: DIO 등)의 모습으로 완벽하게 변장",
-            "물리 공격 무효화: 모래 덩어리이므로 베거나 찔려도 본체에 직접적인 데미지가 없음"
-        ]
-    }
+jojo_db = {
+    "3부: 스타더스트 크루세이더즈": [
+        {"role": "주인공", "name": "쿠죠 죠타로", "stand": "스타 플래티나", "skills": ["오라오라 러시", "스타 핑거", "시간 정지"], "img": "images/jotaro.png"},
+        {"role": "조연", "name": "죠셉 죠스타", "stand": "허밋 퍼플", "skills": ["염사", "가시 덩굴 구출", "파문과의 조합"], "img": "images/joseph.png"},
+        {"role": "조연", "name": "카쿄인 노리아키", "stand": "하이어로팬트 그린", "skills": ["에메랄드 스플래시", "반경 20m 결계", "체내 침투"], "img": "images/kakyoin.png"},
+        {"role": "조연", "name": "장 피에르 폴나레프", "stand": "실버 채리엇", "skills": ["검술 러시", "갑옷 벗기", "검신 분사"], "img": "images/polnareff.png"},
+        {"role": "조연", "name": "무함마드 압둘", "stand": "매지션즈 레드", "skills": ["크로스 파이어 허리케인", "생명 반응 탐지", "화염 제어"], "img": "images/avdol.png"},
+        {"role": "조연", "name": "이기", "stand": "더 풀", "skills": ["모래 변형", "모래 의태", "물리 공격 무효화"], "img": "images/iggy.png"}
+    ],
+    "4부: 다이아몬드는 부서지지 않는다": [
+        {"role": "주인공", "name": "히가시카타 죠스케", "stand": "크레이지 다이아몬드", "skills": ["도라라라 러시", "수리 및 복원", "원형 변형"], "img": "images/josuke.png"},
+        {"role": "조연", "name": "히로세 코이치", "stand": "에코즈 (ACT 1~3)", "skills": ["소리 문자 부착", "소리 효과 물리화", "3 프리즈"], "img": "images/koichi.png"},
+        {"role": "조연", "name": "니지무라 오쿠야스", "stand": "더 핸드", "skills": ["공간 깎아내기", "공간 이동", "단층 삭제"], "img": "images/okuyasu.png"},
+        {"role": "조연", "name": "키시베 로한", "stand": "헤븐즈 도어", "skills": ["사람을 책으로 바꾸기", "기억 읽기", "문구 기입을 통한 행동 강제"], "img": "images/rohan.png"}
+    ],
+    "5부: 황금의 바람": [
+        {"role": "주인공", "name": "죠르노 죠바나", "stand": "골드 익스피리언스", "skills": ["무다무다 러시", "생명 탄생", "신체 부위 창조", "GER"], "img": "images/giorno.png"},
+        {"role": "조연", "name": "브루노 부차라티", "stand": "스티키 핑거즈", "skills": ["아리아리 러시", "지퍼 생성 및 공간 연결", "신체 분리/접합"], "img": "images/bucciarati.png"},
+        {"role": "조연", "name": "귀도 미스타", "stand": "섹스 피스톨즈", "skills": ["탄환 궤적 조종", "총알 튕기기", "수색/탐지"], "img": "images/mista.png"},
+        {"role": "조연", "name": "나란차 길가", "stand": "에어로스미스", "skills": ["소형 전투기 총격", "이산화탄소 감지 레이더", "원거리 수색"], "img": "images/narancia.png"},
+        {"role": "조연", "name": "레오네 아바키오", "stand": "무디 블루스", "skills": ["과거 행동 재생", "변신 및 의태", "녹화 및 역재생"], "img": "images/abbacchio.png"},
+        {"role": "조연", "name": "판나코타 푸고", "stand": "퍼플 헤이즈", "skills": ["살인 바이러스 캡슐", "바이러스 질식 공격", "근접 파괴력"], "img": "images/fugo.png"}
+    ],
+    "6부: 스톤 오션": [
+        {"role": "주인공", "name": "쿠죠 죠린", "stand": "스톤 프리", "skills": ["오라오라 러시", "신체 실화", "실 그물망 구획"], "img": "images/jolyne.png"},
+        {"role": "조연", "name": "에르메스 코스텔로", "stand": "키스", "skills": ["스티커 부착으로 물체 복제", "합체 및 충격 파괴"], "img": "images/ermes.png"},
+        {"role": "조연", "name": "웨더 리포트", "stand": "웨더 리포트", "skills": ["기상 현상 조종", "공기 밀도 제어", "헤비 웨더"], "img": "images/weather.png"},
+        {"role": "조연", "name": "나르시소 안나수이", "stand": "다이버 다운", "skills": ["물체/인체 내부 잠입 및 구조 변경", "충격 저장 및 방출"], "img": "images/anasui.png"},
+        {"role": "조연", "name": "푸 파이터즈 (F.F)", "stand": "푸 파이터즈", "skills": ["플랑크톤 군체", "상처 수복/치료", "플랑크톤 침투 탄환"], "img": "images/ff.png"},
+        {"role": "조연", "name": "엠포리오 아르니뇨", "stand": "버닝 다운 더 하우스", "skills": ["유령 공간 이용", "유령 물건/도구 사용"], "img": "images/emporio.png"}
+    ]
 }
 
-# 세션 상태(Session State) 초기화
-if "selected_char" not in st.session_state:
-    st.session_state.selected_char = "쿠죠 죠타로"
-if "play_sound" not in st.session_state:
-    st.session_state.play_sound = False
+tabs = st.tabs(list(jojo_db.keys()))
 
-st.write("---")
-st.subheader("👥 캐릭터를 선택하세요")
-
-# 캐릭터 일러스트 버튼 배치
-cols = st.columns(len(characters))
-
-for idx, (name, info) in enumerate(characters.items()):
-    with cols[idx]:
-        st.image(info["image"], use_container_width=True)
-        # 버튼을 누르면 캐릭터 변경 및 음성 재생 플래그 설정
-        if st.button(name, key=f"btn_{name}", use_container_width=True):
-            st.session_state.selected_char = name
-            st.session_state.play_sound = True
-
-# 소리 재생 플래그가 True이면 소리를 내고 초기화
-if st.session_state.play_sound:
-    play_ora_sound()
-    st.session_state.play_sound = False
-
-st.write("---")
-
-# 선택된 캐릭터 상세 정보 출력
-selected_name = st.session_state.selected_char
-char_data = characters[selected_name]
-
-col_img, col_info = st.columns([1, 2])
-
-with col_img:
-    st.image(char_data["image"], caption=f"{
+for part_idx, (part_name, char_list) in enumerate(jojo_db.items()):
+    with tabs[part_idx]:
+        st.header(f"✨ {part_name}")
+        
+        char_names = [f"[{c['role']}] {c['name']}" for c in char_list]
+        selected_char_name = st.selectbox(
+            f"캐릭터 선택 ({part_name})", 
+            char_names,
+            key=f"select_{part_idx}"
+        )
+        
+        selected_char = next(c for c in char_list if f"[{c['role']}] {c['name']}" == selected_char_name)
+        
+        st.markdown("---")
+        col1, col2 = st.columns([1, 1.2])
+        
+        with col1:
+            try:
+                st.image(selected_char["img"], caption=selected_char["name"], width=300)
+            except Exception:
+                st.warning(f"'{selected_char['img']}' 경로에 이미지가 없습니다. images 폴더를 확인해 주세요.")
+                
+            if st.button(f"👊 {selected_char['name']} 정보 재생 (오라 소리!)", key=f"btn_{part_idx}_{selected_char['name']}"):
+                play_ora_sound()
+                
+        with col2:
+            st.subheader(f"👤 이름: **{selected_char['name']}** ({selected_char['role']})")
+            st.markdown(f"### 🛡️ 스탠드: **{selected_char['stand']}**")
+            st.markdown("#### ⚡ 주요 기술 및 능력:")
+            for skill in selected_char["skills"]:
+                st.markdown(f"- **{skill}**")
