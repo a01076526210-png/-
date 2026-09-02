@@ -6,23 +6,7 @@ st.set_page_config(
     page_title="죠죠 3부 스탠드 도감",
     page_icon="⭐",
     layout="wide"
-)
 
-# -------------------------------------------------------------------
-# 🔊 효과음 재생을 위한 JavaScript 함수 설정
-# -------------------------------------------------------------------
-# 외부 오디오 파일 URL (죠타로의 오라오라 효과음/음성 파일)
-ORA_SOUND_URL = "https://www.myinstants.com/media/sounds/ora-ora-ora.mp3"
-
-def play_ora_sound():
-    """버튼 클릭 시 JavaScript를 이용해 오디오를 재생하는 컴포넌트"""
-    js_code = f"""
-        <script>
-            var audio = new Audio('{ORA_SOUND_URL}');
-            audio.play();
-        </script>
-    """
-    components.html(js_code, height=0, width=0)
 
 # 헤더 타이틀 및 설명
 st.title("⭐ 죠죠의 기묘한 모험 3부: 스탠드 도감 ⭐")
