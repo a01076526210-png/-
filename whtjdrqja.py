@@ -11,11 +11,11 @@ st.set_page_config(
 st.title("⭐ 죠죠의 기묘한 모험 3부: 스탠드 도감 ⭐")
 st.markdown("주인공 일러스트(버튼)를 클릭하면 해당 캐릭터의 스탠드와 기술 정보가 출력됩니다!")
 
-# 캐릭터 데이터베이스 (이미지 URL, 스탠드 이름, 능력, 주요 기술 등)
+# 캐릭터 데이터베이스 (실제 일러스트 URL 적용 완료)
 characters = {
     "쿠죠 죠타로": {
         "stand": "스타 플래티나 (Star Platinum)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",  # 캐릭터 일러스트 URL로 교체 가능
+        "image": "https://i.namu.wiki/i/0kggSR3vldNGwx71zBWkQnuiSNn_kdI0HsvAEZA4T5HsNHRC6PJT49aZYQF_hUXs-KJ-PQIm3xKFEX4sUWUGUA.webp",
         "description": "압도적인 파괴력과 정밀성, 그리고 눈으로 쫓을 수 없는 스피드를 자랑하는 근거리 파워형 스탠드.",
         "skills": [
             "오라오라 러시: 초고속 연속 펀치 공격",
@@ -26,7 +26,7 @@ characters = {
     },
     "조셉 죠스타": {
         "stand": "허밋 퍼플 (Hermit Purple)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",
+        "image": "https://i.namu.wiki/i/zrS1cSjogLQLAOJS231-AlUAOIG3709TFniGG2Fd44ykDoHDuMBL3XAFRF3VXNMIXGypvs8OtW3Lfsr-Wb7eiQ.webp",
         "description": "가시가 돋친 덩굴 형태의 스탠드로, 염사 및 비전(미래/위치 추적) 능력에 특화되어 있음.",
         "skills": [
             "염사 (기계/사진 염사): 카메라나 TV 등을 부수거나 작동시켜 원하는 정보를 영상화",
@@ -36,7 +36,7 @@ characters = {
     },
     "무하마드 압둘": {
         "stand": "매지션즈 레드 (Magician's Red)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",
+        "image": "https://i.namu.wiki/i/dI_bJ1KpZELcZWA8o3ZlDFnK4jXgZW4NekfzY8wntuE6ifGRlvocAkLa6-CDvS-BJEiqSiS_A3y0kePGASVo8w.webp",
         "description": "조류 머리를 한 도인 형태의 스탠드로, 고열의 화염을 자유자재로 조종함.",
         "skills": [
             "크로스 파이어 허리케인: 앙크(Ankh) 모양의 고열 화염 탄환을 연사",
@@ -46,7 +46,7 @@ characters = {
     },
     "카쿄인 노리아키": {
         "stand": "하이에로판트 그린 (Hierophant Green)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",
+        "image": "https://i.namu.wiki/i/RxGjfESvafY_E-RtoRe2VoYZyeUdrmbu-csFlT_kREWhp9j_RGRXTS-DG3byCusAWQhJWaMPpmGfemQOyRZpfQ.webp",
         "description": "줄기 형태로 몸을 해체할 수 있는 원거리 조종형 스탠드.",
         "skills": [
             "에메랄드 스플래시: 에메랄드 모양의 결정체 체액을 고속으로 분사하는 중거리 격파 기술",
@@ -56,7 +56,7 @@ characters = {
     },
     "장 피에르 폴나레프": {
         "stand": "실버 채리엇 (Silver Chariot)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",
+        "image": "https://i.namu.wiki/i/ICgsObo8cD7C2wOp2Rt0NP7j7Jxd3DhTZyVbFDgVKXODZyd3EBDglk93uIOoSHf0nWvOYmqPHgsZOqX7H5ey1w.webp",
         "description": "갑옷을 입은 기사 형태의 스탠드로, 레이피어를 사용한 초고속 검술에 특화됨.",
         "skills": [
             "고속 검술 및 찌르기: 눈에 보이지 않을 정도의 정밀하고 빠른 검술",
@@ -66,7 +66,7 @@ characters = {
     },
     "이기": {
         "stand": "더 풀 (The Fool)",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Dog_Breeds_Example.jpg/400px-Dog_Breeds_Example.jpg",
+        "image": "https://i.namu.wiki/i/b6ftOlSoLGIRAZLySHzZ8lmCAEne6zY0bBU9CXcH0tOY3vih2s6DkXwa_7Z2J0Yg3PGnxLqBzxH7qgkM9OyeZQ.webp",
         "description": "모래로 구성된 스탠드로, 형태 변형이 자유롭고 물질 형태이기에 물리 공격에 파괴되지 않음.",
         "skills": [
             "모래 변형 및 글라이더: 모래를 입혀 날개를 만들어 공중을 비행",
@@ -76,7 +76,7 @@ characters = {
     }
 }
 
-# 세션 상태(Session State) 초기화 - 선택된 캐릭터 저장
+# 세션 상태(Session State) 초기화
 if "selected_char" not in st.session_state:
     st.session_state.selected_char = "쿠죠 죠타로"
 
@@ -88,7 +88,30 @@ cols = st.columns(len(characters))
 
 for idx, (name, info) in enumerate(characters.items()):
     with cols[idx]:
-        # 캐릭터 이미지 표시
         st.image(info["image"], use_container_width=True)
-        # 선택 버튼
-        if
+        if st.button(name, key=f"btn_{name}", use_container_width=True):
+            st.session_state.selected_char = name
+
+st.write("---")
+
+# 선택된 캐릭터 상세 정보 출력
+selected_name = st.session_state.selected_char
+char_data = characters[selected_name]
+
+col_img, col_info = st.columns([1, 2])
+
+with col_img:
+    st.image(char_data["image"], caption=f"{selected_name}", use_container_width=True)
+
+with col_info:
+    st.title(selected_name)
+    st.subheader(f"✨ 스탠드: {char_data['stand']}")
+    st.write(char_data["description"])
+    
+    st.markdown("### ⚔️ 주요 기술 및 능력")
+    for skill in char_data["skills"]:
+        parts = skill.split(":", 1)
+        if len(parts) == 2:
+            st.markdown(f"- **{parts[0].strip()}**: {parts[1].strip()}")
+        else:
+            st.markdown(f"- **{skill}**")
